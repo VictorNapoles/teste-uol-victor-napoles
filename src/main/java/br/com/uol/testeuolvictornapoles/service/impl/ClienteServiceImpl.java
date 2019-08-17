@@ -3,6 +3,8 @@ package br.com.uol.testeuolvictornapoles.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,14 @@ public class ClienteServiceImpl implements ClienteService {
 
 	@Override
 	public Cliente alterar(Cliente cliente) {
+		Optional<Cliente> optCliente = Optional.ofNullable(cliente);
+		
+		Long id = optCliente.map(Cliente::getId).orElseThrow(() -> new EntityNotFoundException("Favor informar o id do aluno"));
+		
+		if (!repository.existsById(id)) {
+			throw new EntityNotFoundException("Cliente inexistente!");
+		}
+		
 		return repository.save(cliente);
 	}
 

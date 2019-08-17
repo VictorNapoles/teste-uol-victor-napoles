@@ -2,6 +2,8 @@ package br.com.uol.testeuolvictornapoles.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,51 +22,45 @@ import br.com.uol.testeuolvictornapoles.service.ClienteService;
 @RestController
 @RequestMapping("/clientes")
 public class ClienteController {
-	
+
 	@Autowired
 	private ClienteService service;
-	
+
 	@SuppressWarnings("rawtypes")
 	@GetMapping
 	public ResponseEntity obterTodos() {
-		
+
 		ResponseEntity<List<Cliente>> noContent = ResponseEntity.noContent().build();
-		return service.obterTodos().map((l)-> {
-			
-			if(l.isEmpty())
+		return service.obterTodos().map((l) -> {
+
+			if (l.isEmpty())
 				return noContent;
-			
+
 			return ResponseEntity.ok().body(l);
 		}).orElse(noContent);
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@GetMapping("{id}")
-	public ResponseEntity obterPorId(@PathVariable("id")Long id) {
-		
-		return service.obterPorId(id).map((c)-> {
+	public ResponseEntity obterPorId(@PathVariable("id") Long id) {
+
+		return service.obterPorId(id).map((c) -> {
 			return ResponseEntity.ok().body(c);
 		}).orElse(ResponseEntity.noContent().build());
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@PostMapping
-	public ResponseEntity inserir(@RequestBody Cliente cliente) {
-		
-		try {
-			cliente = service.inserir(cliente);
-			return new ResponseEntity<Cliente>(cliente, HttpStatus.CREATED);
+	public ResponseEntity inserir(@RequestBody @Valid Cliente cliente) {
 
-		} catch (Exception e) {
-			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
-
-		}
+		cliente = service.inserir(cliente);
+		return new ResponseEntity<Cliente>(cliente, HttpStatus.CREATED);
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@PutMapping
-	public ResponseEntity alterar(@RequestBody Cliente cliente) {
-		
+	public ResponseEntity alterar(@RequestBody @Valid Cliente cliente) {
+
 		try {
 			cliente = service.alterar(cliente);
 			return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
@@ -74,11 +70,11 @@ public class ClienteController {
 
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@DeleteMapping("{id}")
-	public ResponseEntity remover(@PathVariable("id")Long id) {
-		
+	public ResponseEntity remover(@PathVariable("id") Long id) {
+
 		try {
 			service.remover(id);
 			return new ResponseEntity<Cliente>(HttpStatus.OK);
@@ -88,6 +84,5 @@ public class ClienteController {
 
 		}
 	}
-	
-	
+
 }
